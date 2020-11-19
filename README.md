@@ -1,2 +1,2 @@
 # Newcrops
-Own version of newcrops for Windows
+Own version of newcrops for Windows 

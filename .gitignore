@@ -1,0 +1,17 @@
+.svn/**
+benchmarks/**
+build/**
+out/**
+.vs/**
+data/**
+libraries/*/.svn/**
+reference/.svn/**
+tests/**
+reference/**
+parallel_version/**
+doxygen/**
+command_line_version/**
+windows_version/**
+
+
+
