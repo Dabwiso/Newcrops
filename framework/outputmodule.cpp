@@ -3,7 +3,7 @@
 /// \brief Implementation of OutputModule and its container class
 ///
 /// \author Joe Siltberg
-/// $Date: 2019-07-13 17:38:50 +0100 (Sat, 13 Jul 2019) $
+/// $Date: 2019-07-13 09:38:50 -0700 (Sat, 13 Jul 2019) $
 ///
 ///////////////////////////////////////////////////////////////////////////////////////
 

@@ -3,7 +3,7 @@
 /// \brief Input module for CF conforming NetCDF files
 ///
 /// \author Joe Siltberg
-/// $Date: 2019-12-13 09:44:55 +0000 (Fri, 13 Dec 2019) $
+/// $Date: 2020-12-06 21:13:55 -0800 (Sun, 06 Dec 2020) $
 ///
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -208,7 +208,7 @@ void check_pres_variable(const GuessNC::CF::GridcellOrderedVariable* cf_var) {
 	}
 }
 
-// Verifies that a CF variable with pressure data contains what we expect
+// Verifies that a CF variable with specific humidity data contains what we expect
 void check_specifichum_variable(const GuessNC::CF::GridcellOrderedVariable* cf_var) {
 	const char* standard_name = "specific_humidity";
 	if (cf_var->get_standard_name() != standard_name) {
@@ -219,7 +219,7 @@ void check_specifichum_variable(const GuessNC::CF::GridcellOrderedVariable* cf_v
 	}
 }
 
-// Verifies that a CF variable with pressure data contains what we expect
+// Verifies that a CF variable with relative humidity data contains what we expect
 void check_relhum_variable(const GuessNC::CF::GridcellOrderedVariable* cf_var) {
 	const char* standard_name = "relative_humidity";
 	if (cf_var->get_standard_name() != standard_name) {
@@ -230,7 +230,7 @@ void check_relhum_variable(const GuessNC::CF::GridcellOrderedVariable* cf_var) {
 	}
 }
 
-// Verifies that a CF variable with pressure data contains what we expect
+// Verifies that a CF variable with wind-speed data contains what we expect
 void check_wind_variable(const GuessNC::CF::GridcellOrderedVariable* cf_var) {
 	const char* standard_name = "wind_speed";
 	if (cf_var->get_standard_name() != standard_name) {
@@ -484,9 +484,9 @@ void CFInput::init() {
 				c.rlon = rlon;
 
 			}
-			else {
-				fail("The gridlist for netCDF input must be in X,Y coordinates");
-			}
+			//else {
+			//	fail("The gridlist for netCDF input must be in X,Y coordinates");
+			//}
 		}
 		c.descrip = (xtring)trim(descrip).c_str();
 		gridlist.push_back(c);
@@ -520,11 +520,10 @@ bool CFInput::getgridcell(Gridcell& gridcell) {
 
 	// Load data for next gridcell, or if that fails, skip ahead until
 	// we find one that works.
-	while (current_gridcell != gridlist.end() &&
-	       !load_data_from_files(lon, lat)){
-		++current_gridcell;
-	}
-
+	while (current_gridcell != gridlist.end() && (
+	       !load_data_from_files(lon, lat) || landcover_input.loadlandcover(lon, lat) || management_input.loadmanagement(lon, lat))){
+		 ++current_gridcell;
+        }	
 	cru_lon = floor(lon * 2.0) / 2.0 + 0.25;
 	cru_lat = floor(lat * 2.0) / 2.0 + 0.25;
 
@@ -540,10 +539,10 @@ bool CFInput::getgridcell(Gridcell& gridcell) {
 			LUerror = management_input.loadmanagement(lon, lat);
 		if (LUerror) {
 			dprintf("\nError: could not find stand at (%g,%g) in landcover/management data file(s)\n", lon, lat);
-			return false;
+                        return false;
 		}
 	}
-
+        
 	gridcell.set_coordinates(lon, lat);
 
 	// Load spinup data for all variables

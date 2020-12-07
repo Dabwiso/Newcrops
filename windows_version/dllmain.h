@@ -6,7 +6,7 @@
 /// time argument(s) for GUESS and pointers to the executable's own callback functions.
 ///
 /// \author Ben Smith
-/// $Date: 2016-12-08 17:24:04 +0000 (Thu, 08 Dec 2016) $
+/// $Date: 2016-12-08 09:24:04 -0800 (Thu, 08 Dec 2016) $
 ///
 ///////////////////////////////////////////////////////////////////////////////////////
 

@@ -2,7 +2,7 @@
 /// \file management.h
 /// \brief Harvest functions for cropland, managed forest and pasture			
 /// \author Mats Lindeskog
-/// $Date: 2019-10-10 14:00:31 +0100 (Thu, 10 Oct 2019) $
+/// $Date: 2019-10-10 06:00:31 -0700 (Thu, 10 Oct 2019) $
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #ifndef LPJ_GUESS_MANAGEMENT_H

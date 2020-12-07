@@ -2,7 +2,7 @@
 /// \file archive.h
 /// \brief Classes to make (de)serializing to/from streams convenient
 ///
-/// $Date: 2012-11-20 08:44:41 +0000 (Tue, 20 Nov 2012) $
+/// $Date: 2012-11-20 00:44:41 -0800 (Tue, 20 Nov 2012) $
 ///
 ///////////////////////////////////////////////////////////////////////////////////////
 

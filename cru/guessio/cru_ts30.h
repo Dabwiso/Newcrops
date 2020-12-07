@@ -5,7 +5,7 @@
 /// The binary files contain CRU-NCEP half-degree global historical climate data
 /// for 1901-2015.
 ///
-/// $Date: 2019-12-13 09:44:55 +0000 (Fri, 13 Dec 2019) $
+/// $Date: 2019-12-13 01:44:55 -0800 (Fri, 13 Dec 2019) $
 ///
 ///////////////////////////////////////////////////////////////////////////////////////
 

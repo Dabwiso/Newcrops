@@ -3,7 +3,7 @@
 /// \brief Output module for the land use and management information
 ///
 /// \author Joe Siltberg
-/// $Date: 2020-04-28 15:14:39 +0100 (Tue, 28 Apr 2020) $
+/// $Date: 2020-12-06 21:13:55 -0800 (Sun, 06 Dec 2020) $
 ///
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -67,10 +67,9 @@ private:
 		   file_cmass_natural, file_cmass_forest, file_dens_natural,
 		   file_dens_forest, file_soil_nflux_cropland, file_soil_nflux_pasture,
 		   file_soil_nflux_natural, file_soil_nflux_forest,
-		   file_cmass_peatland, file_cflux_peatland,
+		   file_cmass_peatland, file_HI, file_cflux_peatland,
 		   file_cpool_peatland, file_nflux_peatland, file_npool_peatland,
-		   file_anpp_peatland,
-		   file_gsirr; // SSR: Per-CFT irrigation water output
+		   file_anpp_peatland;
 
 	// daily
 	xtring file_daily_lai, file_daily_npp, file_daily_nmass, file_daily_cmass,
@@ -104,8 +103,7 @@ private:
 		  out_soil_nflux_natural, out_soil_nflux_forest,
 		  out_cflux_peatland, out_cpool_peatland,
 		  out_nflux_peatland, out_npool_peatland, out_cmass_peatland,
-		  out_anpp_peatland,
-		  out_gsirr; // SSR: Per-CFT irrigation water output
+		  out_anpp_peatland, out_HI;
 
 	Table* out_anpp_stand[MAXNUMBER_STANDS];
 	Table* out_cmass_stand[MAXNUMBER_STANDS];

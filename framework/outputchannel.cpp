@@ -3,7 +3,7 @@
 /// \brief Classes for formatting and printing output from the model
 ///
 /// \author Joe Siltberg
-/// $Date: 2019-02-08 14:55:08 +0000 (Fri, 08 Feb 2019) $
+/// $Date: 2019-02-08 06:55:08 -0800 (Fri, 08 Feb 2019) $
 ///
 ///////////////////////////////////////////////////////////////////////////////////////
 

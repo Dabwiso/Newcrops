@@ -6,7 +6,7 @@
 /// windspeed (needed) for Blaze, currently taken from cru_input. This has the implication 
 /// that the climate variables are not synced. 
 ///
-/// $Date: 2019-10-29 13:13:10 +0000 (Tue, 29 Oct 2019) $
+/// $Date: 2019-10-29 06:13:10 -0700 (Tue, 29 Oct 2019) $
 ///
 ///////////////////////////////////////////////////////////////////////////////////////
 

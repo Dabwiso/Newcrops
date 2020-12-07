@@ -2,7 +2,7 @@
 /// \file archive.cpp
 /// \brief Classes to make (de)serializing to/from streams convenient
 ///
-/// $Date: 2012-09-20 14:22:28 +0100 (Thu, 20 Sep 2012) $
+/// $Date: 2012-09-20 06:22:28 -0700 (Thu, 20 Sep 2012) $
 ///
 ///////////////////////////////////////////////////////////////////////////////////////
 

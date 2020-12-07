@@ -3,7 +3,7 @@
 /// \brief Implementation of the framework() function
 ///
 /// \author Ben Smith
-/// $Date: 2019-10-29 13:13:10 +0000 (Tue, 29 Oct 2019) $
+/// $Date: 2019-10-29 06:13:10 -0700 (Tue, 29 Oct 2019) $
 ///
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -155,7 +155,7 @@ int framework(const CommandLineArguments& args) {
 	// The 'mission control' of the model, responsible for maintaining the
 	// primary model data structures and containing all explicit loops through
 	// space (grid cells/stands) and time (days and years).
-
+	
 	using std::auto_ptr;
 
 	const char* input_module_name = args.get_input_module();

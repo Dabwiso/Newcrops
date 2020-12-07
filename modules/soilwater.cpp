@@ -12,7 +12,7 @@
 /// determines if the original (Gerten et al) scheme is used or the newer scheme.
 ///
 /// \author Ben Smith
-/// $Date$
+/// $Date: 2020-12-06 21:13:55 -0800 (Sun, 06 Dec 2020) $
 ///
 ///////////////////////////////////////////////////////////////////////////////////////
 

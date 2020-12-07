@@ -5,7 +5,6 @@ out/**
 .vs/**
 data/**
 libraries/*/.svn/**
-reference/.svn/**
 tests/**
 reference/**
 parallel_version/**

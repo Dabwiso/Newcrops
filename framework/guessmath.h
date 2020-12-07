@@ -6,7 +6,7 @@
 ///  (1) Definitions of constants and common functions used throughout LPJ-GUESS
 ///
 /// \author Michael Mischurow
-/// $Date: 2019-10-29 13:13:10 +0000 (Tue, 29 Oct 2019) $
+/// $Date: 2019-10-29 06:13:10 -0700 (Tue, 29 Oct 2019) $
 ///
 ////////////////////////////////////////////////////////////////////////////////
 

@@ -33,7 +33,8 @@ MiscOutput::MiscOutput() {
 	declare_parameter("file_yield",&file_yield,300, "Crop yield output file");
 	declare_parameter("file_yield1",&file_yield1,300,"Crop first yield output file");
 	declare_parameter("file_yield2",&file_yield2,300,"Crop second yield output file");
-	declare_parameter("file_sdate1",&file_sdate1,300,"Crop first sowing date output file");
+	declare_parameter("file_HI", &file_HI, 300, "Harvest index output file");
+        declare_parameter("file_sdate1",&file_sdate1,300,"Crop first sowing date output file");
 	declare_parameter("file_sdate2",&file_sdate2,300,"Crop second sowing date output file");
 	declare_parameter("file_hdate1",&file_hdate1,300,"Crop first harvest date output file");
 	declare_parameter("file_hdate2",&file_hdate2,300,"Crop second harvest date output file");
@@ -65,7 +66,6 @@ MiscOutput::MiscOutput() {
 	declare_parameter("file_npool_natural", &file_npool_natural, 300, "Soil N output file");
 	declare_parameter("file_npool_forest", &file_npool_forest, 300, "Soil N output file");
 	declare_parameter("file_npool_peatland", &file_npool_peatland, 300, "Soil N output file");
-	declare_parameter("file_gsirr",&file_gsirr,300,"Per-CFT irrigation output file"); // SSR: Per-CFT irrigation water output
 
 	declare_parameter("file_soil_nflux_cropland", &file_soil_nflux_cropland, 300, "Soil N fluxes output file");
 	declare_parameter("file_soil_nflux_pasture", &file_soil_nflux_pasture, 300, "Soil N fluxes output file");
@@ -222,9 +222,6 @@ void MiscOutput::define_output_tables() {
 	ColumnDescriptors crop_columns;
 	crop_columns += ColumnDescriptors(crop_pfts,           8, 3);
 
-	//CROP STUFF (WIDE)
-	ColumnDescriptors crop_columns_wide;
-	crop_columns_wide += ColumnDescriptors(crop_pfts,           10, 3);
 	//CROP SDATE & HDATE
 	ColumnDescriptors date_columns;
 	date_columns += ColumnDescriptors(crop_pfts,           8, 0);
@@ -317,6 +314,7 @@ void MiscOutput::define_output_tables() {
 		create_output_table(out_yield,      file_yield,          crop_columns);
 		create_output_table(out_yield1,     file_yield1,         crop_columns);
 		create_output_table(out_yield2,     file_yield2,         crop_columns);
+                create_output_table(out_HI,         file_HI,             crop_columns);
 		create_output_table(out_sdate1,     file_sdate1,         date_columns);
 		create_output_table(out_sdate2,     file_sdate2,         date_columns);
 		create_output_table(out_hdate1,     file_hdate1,         date_columns);
@@ -325,7 +323,6 @@ void MiscOutput::define_output_tables() {
 		create_output_table(out_phu,        file_phu,            date_columns);
 		create_output_table(out_fphu,       file_fphu,           crop_columns);
 		create_output_table(out_fhi,        file_fhi,            crop_columns);
-        create_output_table(out_gsirr,      file_gsirr,          crop_columns_wide); // SSR: Per-CFT irrigation water output
 	}
 
         create_output_table(out_seasonality,file_seasonality,    seasonality_columns);
@@ -437,7 +434,6 @@ void MiscOutput::outannual(Gridcell& gridcell) {
 	double mean_standpft_densindiv_total_lc[NLANDCOVERTYPES]={0.0};
 
 	double irrigation_gridcell=0.0;
-	double standpft_gsirr=0.0; // SSR: Per-CFT irrigation water output
 
 	double standpft_cmass=0.0;
 	double standpft_nmass=0.0;
@@ -447,6 +443,7 @@ void MiscOutput::outannual(Gridcell& gridcell) {
 	double standpft_yield=0.0;
 	double standpft_yield1=0.0;
 	double standpft_yield2=0.0;
+        double standpft_HI = 0.0;
 	double standpft_densindiv_total=0.0;
 
 	pftlist.firstobj();
@@ -458,7 +455,7 @@ void MiscOutput::outannual(Gridcell& gridcell) {
 		double mean_standpft_yield=0.0;
 		double mean_standpft_yield1=0.0;
 		double mean_standpft_yield2=0.0;
-		double mean_standpft_gsirr=0.0; // SSR: Per-CFT irrigation water output
+                double mean_standpft_HI = 0.0;
 
 		for (int i=0; i<NLANDCOVERTYPES; i++) {
 			mean_standpft_anpp_lc[i]=0.0;
@@ -503,7 +500,7 @@ void MiscOutput::outannual(Gridcell& gridcell) {
 			standpft_yield=0.0;
 			standpft_yield1=0.0;
 			standpft_yield2=0.0;
-			standpft_gsirr=0.0; // SSR: Per-CFT irrigation water output
+                        standpft_HI=0.0;
 			standpft_densindiv_total = 0.0;
 
 			stand.firstobj();
@@ -519,7 +516,6 @@ void MiscOutput::outannual(Gridcell& gridcell) {
 				standpft_clitter += patchpft.litter_leaf + patchpft.litter_root + patchpft.litter_sap + patchpft.litter_heart + patchpft.litter_repr;
 				standpft_nlitter += patchpft.nmass_litter_leaf + patchpft.nmass_litter_root + patchpft.nmass_litter_sap + patchpft.nmass_litter_heart;
 
-				standpft_gsirr += patch.irrigation_y; // SSR: Per-CFT irrigation water output
 				vegetation.firstobj();
 				while (vegetation.isobj) {
 					Individual& indiv=vegetation.getobj();
@@ -533,6 +529,9 @@ void MiscOutput::outannual(Gridcell& gridcell) {
 							standpft_yield += indiv.cropindiv->harv_yield;
 							standpft_yield1 += indiv.cropindiv->yield_harvest[0];
 							standpft_yield2 += indiv.cropindiv->yield_harvest[1];
+                                                 if (indiv.cropindiv->harv_cmass_ho > 0.0) {
+                                                 standpft_HI += (indiv.cropindiv->harv_cmass_ho / (indiv.cropindiv->harv_cmass_agpool + indiv.cropindiv->harv_cmass_stem + indiv.cropindiv->harv_cmass_leaf + indiv.cropindiv->harv_cmass_ho + indiv.cropindiv->grs_cmass_dead_leaf));
+                                                }          
 						}
 						else {
 
@@ -559,6 +558,7 @@ void MiscOutput::outannual(Gridcell& gridcell) {
 			standpft_yield/=(double)stand.npatch();
 			standpft_yield1/=(double)stand.npatch();
 			standpft_yield2/=(double)stand.npatch();
+                        standpft_HI/=(double)stand.npatch();
 
 			//Update landcover totals
 			landcover_cmass[stand.landcover]+=standpft_cmass*stand.get_landcover_fraction();
@@ -573,7 +573,7 @@ void MiscOutput::outannual(Gridcell& gridcell) {
 			mean_standpft_yield += standpft_yield * stand.get_gridcell_fraction() / active_fraction;
 			mean_standpft_yield1 += standpft_yield1 * stand.get_gridcell_fraction() / active_fraction;
 			mean_standpft_yield2 += standpft_yield2 * stand.get_gridcell_fraction() / active_fraction;
-			mean_standpft_gsirr += standpft_gsirr * stand.get_gridcell_fraction() / active_fraction; // SSR: Per-CFT irrigation water output
+                        mean_standpft_HI += standpft_HI * stand.get_gridcell_fraction() / active_fraction;
 
 			//Update pft mean for active stands in landcover
 			mean_standpft_anpp_lc[stand.landcover] += standpft_anpp * stand.get_gridcell_fraction() / active_fraction_lc[stand.landcover];
@@ -652,7 +652,7 @@ void MiscOutput::outannual(Gridcell& gridcell) {
 			outlimit_misc(out, out_yield,   mean_standpft_yield);
 			outlimit_misc(out, out_yield1,  mean_standpft_yield1);
 			outlimit_misc(out, out_yield2,  mean_standpft_yield2);
-			outlimit_misc(out, out_gsirr,  mean_standpft_gsirr); // SSR: Per-CFT irrigation water output
+                        
 
 			int pft_sdate1=-1;
 			int pft_sdate2=-1;
@@ -680,7 +680,8 @@ void MiscOutput::outannual(Gridcell& gridcell) {
 
 				++gc_itr;
 			}
-			outlimit_misc(out, out_sdate1, pft_sdate1);
+			outlimit_misc(out, out_HI, standpft_HI);
+                        outlimit_misc(out, out_sdate1, pft_sdate1);
 			outlimit_misc(out, out_sdate2, pft_sdate2);
 			outlimit_misc(out, out_hdate1, pft_hdate1);
 			outlimit_misc(out, out_hdate2, pft_hdate2);

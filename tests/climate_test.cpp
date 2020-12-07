@@ -3,7 +3,7 @@
 /// \brief Unit tests for functions processing climate data
 ///
 /// \author Joe Siltberg
-/// $Date: 2014-03-03 07:50:44 +0000 (Mon, 03 Mar 2014) $
+/// $Date: 2014-03-02 23:50:44 -0800 (Sun, 02 Mar 2014) $
 ///
 ///////////////////////////////////////////////////////////////////////////////////////
 

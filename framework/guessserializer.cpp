@@ -2,7 +2,7 @@
 /// \file guessserializer.cpp
 /// \brief Classes which handle (de)serializing LPJ-GUESS state
 ///
-/// $Date: 2014-06-23 14:50:25 +0100 (Mon, 23 Jun 2014) $
+/// $Date: 2014-06-23 06:50:25 -0700 (Mon, 23 Jun 2014) $
 ///
 ///////////////////////////////////////////////////////////////////////////////////////
 
