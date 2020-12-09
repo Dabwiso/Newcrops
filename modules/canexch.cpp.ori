@@ -6,7 +6,7 @@
 /// production, respiration and evapotranspiration.
 ///
 /// \author Ben Smith
-/// $Date: 2020-12-08 23:22:21 -0800 (Tue, 08 Dec 2020) $
+/// $Date: 2020-12-06 21:13:55 -0800 (Sun, 06 Dec 2020) $
 ///
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -2014,7 +2014,7 @@ double irrigated_water_uptake(Patch& patch, Pft& pft, const Day& day, bool inund
 
 /// Actual evapotranspiration and water stress
 /** Soil water supply at the roots available to meet the transpirational demand
- * Fundamentally, water stress = supply < demand
+ *  Fundamentally, water stress = supply < demand
  */
 void aet_water_stress(Patch& patch, Vegetation& vegetation, const Day& day) {
 
@@ -2732,9 +2732,6 @@ void init_canexch(Patch& patch, Climate& climate, Vegetation& vegetation) {
                 indiv.mlai[m] = 0.0;
                 indiv.mlai_max[m] = 0.0;
             }
-             //TODO indiv.PODy = 0.0;
-             indiv.PODy_yearly = 0.0;
-             indiv.fraction_dead_leaf_yearly = 0.0;
 
             vegetation.nextobj();
         }
@@ -2743,167 +2740,7 @@ void init_canexch(Patch& patch, Climate& climate, Vegetation& vegetation) {
     patch.wdemand_day = 0;
 }
 
-#define TESTYEAR 1999
-#define SUBDAILYGC
 
-void ozone_stress(Patch& patch, Vegetation& vegetation) {
-    if (date.year > nyear_spinup) {
-        // diffusion scaling constant of ozone K_O3
-        // the ratio of H2O diffusivity to O3 difussivity unitless (1.67)
-        // Grûnhage et al. 2012
-
-        Individual& indiv = vegetation.getobj();
-        Patchpft& ppft = patch.pft[indiv.pft.id];
-
-        const double K_o3 = 1.67; //1.51 in OC-N (Massman 1998)
-
-
-        Climate cl = patch.get_climate();
-        double daylength = cl.daylength * 3600;
-
-        const double PATMOS = 1.0E5; // atmospheric pressure (Pa)
-
-        // mol per m3 under standard conditions using the ideal gas law
-        double mol_per_m3 = PATMOS / ((cl.temp + 273.15) * 8.3145);
-        double height_veg = max(1.0, patch.height);
-
-        // O3 deposition from Cambell & Norman, 1998 and Franz, 2017
-        const double Zm = 0.1 * height_veg; // roughness parameter
-        const double d = 0.65 * height_veg; // displacement from zero
-
-        double wspeed = cl.u10 / 3.6;
-        const double fvelocity = (wspeed * 0.4) / log((10.0 + d) / Zm); // Karman constant is 0.4, if 10m is the height of measured windspeed
-        double wspeed45 = (fvelocity / 0.4) * log((45.0 - d) / Zm); // if 45m is the ozone input height
-
-        double Ra = wspeed45 / pow(fvelocity, 2.0);
-        double Rb = 6.0 / fvelocity;
-        double R_gs = 2000.0;
-        double gc_c = ppft.gcbase * 1e-3; // *indiv.fpc_today() with conversion to m from mm.
-        if (gc_c == 0.0) {
-            gc_c = indiv.gpterm * 1e-3; //indiv.fpc_today()  with conversion to m from mm.
-        }
-
-        double gc_o3 = gc_c / K_o3;
-
-        double LAI = patch.lai;
-        double SAI = patch.sai;
-        double FT = exp(-0.2 * (1.0 + cl.temp));
-        double rext = 2500 * FT;
-        double rinc = 14.0 * SAI * (height_veg / fvelocity);
-        double rgs = 1.0 / (FT * R_gs);
-
-        double gc_ns = SAI / rext + 1.0 / (rinc + rgs);
-
-        double Rc = 1.0 / (gc_o3 + gc_ns);
-        double o3a = 0.0
-            //double o3a = patch.stand.get_gridcell().ozone_y;
-            /*
-    #undef TESTYEAR
-
-            o3a = 22.0*(1.0 + 2.0/3.0*sin(PI*2.0*(double)date.day/365.0-PI/2.0))*1e-9;
-    #ifdef TESTYEAR
-
-                //o3a = 1.0e-9; //  ppbv
-
-                if(date.get_calendar_year() > TESTYEAR) {
-
-                    o3a*=conc;
-                } else {
-                    o3a = 0.0;
-                }
-
-    #endif
-    */;
-
-        double o3c = o3a * (1.0 - Ra / (Ra + Rb + Rc));
-
-
-        vegetation.firstobj();
-        double gc_o3_integrator = 0.33; // Heath et al 2009
-        while (vegetation.isobj) {
-
-
-
-            if (date.year == 602 && indiv.id == 181) {
-             int kronic = 9;
-            }
-
-            /*if (cp.dev_stage < 0.5) {
-                indiv.POD6 = 0.0; // basically insensitive to O3 in the beginning of the growing season
-            }*/
-            
-            //gc = indiv.photosynthesis.gcbase * 1e-3;
-
-
-            // O3 deposition from Cambell & Norman, 1998 and Franz, 2017
-
-#undef SUBDAILYGC
-#ifdef SUBDAILYGC
-            double Fo3 = 0.0;
-            int hours = (int)floor(cl.daylength);
-
-            for (int i = 0; i < hours; i++) {
-                double pi = PI;
-                double gc_t = gc * (1.0 + cos((double)i * 2.0 * pi / ((double)hours) + pi));
-                Fo3 += max(((gc_t * o3c * mol_per_m3) - 6.0e-9), 0.0) / cl.daylength;
-            }
-#else
-            double Fo3 = ((gc_c / K_o3 * o3c * mol_per_m3) - ppft.pft.PODy * 1e-9);
-#endif
-
-            double dPODy = Fo3 * 1e3 * daylength * gc_o3_integrator;//convert to milli mole
-            if (dPODy > 0.0) {
-                if (date.year == 501 && date.day == 107) {
-                    int goranovic = 1;
-                }
-                if (indiv.cmass_leaf_today() > 0.0) {
-                    double leafn = indiv.nmass_leaf;
-                    double leafc = indiv.cmass_leaf_today();
-                    double dleaf = (indiv.pft.PODy_m + indiv.pft.PODy_k * indiv.PODy) * dPODy; // Senescence effect on the leaf
-                    //Only if the O3 effect is negative
-                    if (dleaf < 0.0) {
-                        if (indiv.istruecrop_or_intercropgrass()) {
-                            cropindiv_struct& ci = *(indiv.get_cropindiv());
-                            cropphen_struct& cp = *(ppft.get_cropphen());
-                            if (cp.dev_stage < 0.5) {
-                                indiv.PODy = 0.0; // basically insensitive to O3 in the beginning of the growing season
-                            }
-                            else {
-                                ci.grs_cmass_dead_leaf += leafc * fabs(dleaf);
-                                ci.grs_cmass_leaf += leafc * dleaf;
-                                indiv.nmass_leaf += leafn * dleaf;
-                                ci.nmass_dead_leaf += leafn * fabs(dleaf);
-                            }
-                        }
-                        else {
-                            if (indiv.phen < 0.50) { //This is just a placeholder for more detailed description on the seasonality of the ozone sensitivities of different pfts.
-                                indiv.PODy = 0.0;
-                            }
-                            else {
-
-                                indiv.cmass_dead_leaf += leafc * fabs(dleaf);
-                                indiv.nmass_dead_leaf += leafn * fabs(dleaf);
-                                //TODO implement a function for active nmass_leaf
-                                if (indiv.cmass_dead_leaf > 0.9 * indiv.cmass_leaf) {
-                                    indiv.cmass_dead_leaf = 0.9 * indiv.cmass_leaf;
-                                }
-                                if (indiv.nmass_dead_leaf > 0.9 * indiv.nmass_leaf) {
-                                    indiv.nmass_dead_leaf = 0.9 * indiv.nmass_leaf;
-                                }
-                            }
-                        }
-                    }
-                }
-                indiv.PODy += dPODy;
-                indiv.PODy_yearly += dPODy;
-                indiv.fraction_dead_leaf_yearly = indiv.cmass_dead_leaf;
-
-            }
-            vegetation.nextobj();
-        }
-    }
-
-}
 
 double bnf_func_developmentstage (double ds, Pft& pft) {
     double gmin = pft.bnf_ds_min;

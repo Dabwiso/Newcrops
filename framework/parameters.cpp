@@ -7,7 +7,7 @@
 /// function plib_callback).
 ///
 /// \author Joe Siltberg
-/// $Date: 2020-12-06 21:13:55 -0800 (Sun, 06 Dec 2020) $
+/// $Date: 2020-12-08 23:22:21 -0800 (Tue, 08 Dec 2020) $
 ///
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -927,6 +927,13 @@ void plib_declarations(int id,xtring setname) {
 			"max GDD0 for survival/establishment");
 
 		declareitem("n_fixer",&ppft->fixer,1,CB_NONE,"If pft is a nitrogen fixer");
+
+		//O3
+		declareitem("PODy", &ppft->PODy, 0.0, 10000.0, 1, CB_NONE, "O3 Deposition threshold for toxicity (ppb)");
+		callwhendone(CB_CHECKPFT);
+		declareitem("PODy_k", &ppft->PODy_k, -1.0, 1.0, 1, CB_NONE, "O3 Deposition threshold for toxicity (ppb)");
+		callwhendone(CB_CHECKPFT);
+		declareitem("PODy_m", &ppft->PODy_m, -1.0, 1.0, 1, CB_NONE, "O3 Deposition threshold for toxicity (ppb)");
 
 		callwhendone(CB_CHECKPFT);
 

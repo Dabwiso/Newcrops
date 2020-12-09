@@ -3,7 +3,7 @@
 /// \brief LPJ-GUESS Combined Modular Framework
 ///
 /// \author Ben Smith
-/// $Date: 2020-04-28 07:14:39 -0700 (Tue, 28 Apr 2020) $
+/// $Date: 2020-12-08 23:22:21 -0800 (Tue, 08 Dec 2020) $
 ///
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -396,6 +396,10 @@ Patch::Patch(int i,Stand& s,Soiltype& st):
 	isinundated = false;
 	anfert = 0.0;
 	nharv = 0;
+	height = 0.0;
+	lai = 0.0;
+	sai = 0.0;
+	
 	for (int i = 0; i < NYEARAAET; i++) {
 		aaet_5.add(0.0);
 	}
@@ -1228,6 +1232,12 @@ Individual::Individual(int i,Pft& p,Vegetation& v):pft(p),vegetation(v),id(i) {
 	dnpp              = 0.0;
 	cropindiv         = NULL;
 	last_turnover_day = -1;
+
+	nmass_dead_leaf = 0.0;
+	cmass_dead_leaf = 0.0;
+	PODy = 0.0;
+	PODy_yearly = 0.0;
+	fraction_dead_leaf_yearly = 0.0;
 
 	Stand& stand = vegetation.patch.stand;
 

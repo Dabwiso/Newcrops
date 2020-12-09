@@ -12,7 +12,7 @@
 ///      function.
 ///
 /// \author Ben Smith
-/// $Date: 2020-12-06 21:13:55 -0800 (Sun, 06 Dec 2020) $
+/// $Date: 2020-12-08 23:22:21 -0800 (Tue, 08 Dec 2020) $
 ///
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -1888,6 +1888,14 @@ public:
 	/// N limited version of pft
 	bool nlim;
 
+	//O3
+	/// O3 Deposition threshold for toxicity (ppb)
+	double PODy;
+	// Added reduction in Vmax (leaf N) per PODy, PODy dependant
+	double PODy_k;
+	// Reduction in Vmax (leaf N) per PODy
+	double PODy_m;
+
 	bool fixer;
 	//Parameters describing the development stage dependence in plant BNF
 	double bnf_ds_min, bnf_ds_max, bnf_ds_opt_low, bnf_ds_opt_high;
@@ -1902,6 +1910,7 @@ public:
 
 	double avg_cton(const double& min, const double& max) {
 		return 2.0 / (1. / min + 1. / max);
+
 	}
 	// MEMBER FUNCTIONS
 
@@ -2008,6 +2017,11 @@ public:
 		bnf_t_opt_low = -1.0;
 		bnf_t_opt_high = -1.0;
 		bnf_max = -1.0;
+
+		//Values for wheat
+		PODy = 6.0;
+		PODy_k = -0.0436;
+		PODy_m = 0.0071;
 
 	}
 
@@ -2496,6 +2510,8 @@ public:
 	int id;
 	/// leaf C biomass on modelled area basis (kgC/m2)
 	double cmass_leaf;
+	/// leaf dead C biomass on modelled area basis (kgC/m2)
+	double cmass_dead_leaf;
 	/// fine root C biomass on modelled area basis (kgC/m2)
 	double cmass_root;
 	/// sapwood C biomass on modelled area basis (kgC/m2)
@@ -2515,6 +2531,8 @@ public:
 
 	/// leaf N biomass on modelled area basis (kgN/m2)
 	double nmass_leaf;
+	/// leaf dead N biomass on modelled area basis (kgN/m2)
+	double nmass_dead_leaf;
 	/// root N biomass on modelled area basis (kgN/m2)
 	double nmass_root;
 	/// sap N biomass on modelled area basis (kgN/m2)
@@ -2703,6 +2721,12 @@ public:
 	double monstor[NMTCOMPOUNDS];
 	/// isoprene seasonality factor (-)
 	double fvocseas;
+
+	double PODy;
+
+	double PODy_yearly;
+
+	double fraction_dead_leaf_yearly;
 
 	/// Pointer to struct with crop-specific data
 	cropindiv_struct *cropindiv;
@@ -4081,6 +4105,8 @@ public:
 	double fpc_total;
 	/// whether patch was disturbed last year
 	bool disturbed;
+	/// canopy height
+	double height;
 	/// patch age (years since last disturbance)
 	int age;
 	/// probability of fire this year
@@ -4208,6 +4234,9 @@ public:
 	int nharv;
 	/// whether today is a harvest day and/or cover-crop killing or turnover day
 	bool isharvestday;
+	/// leaf area index and superficial area index
+	double lai;
+	double sai;
 
 	// MEMBER FUNCTIONS
 
