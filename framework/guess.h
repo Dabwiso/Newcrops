@@ -12,7 +12,7 @@
 ///      function.
 ///
 /// \author Ben Smith
-/// $Date: 2020-12-08 23:22:21 -0800 (Tue, 08 Dec 2020) $
+/// $Date: 2020-12-22 22:12:36 -0800 (Tue, 22 Dec 2020) $
 ///
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -4170,6 +4170,7 @@ public:
 	Historic<double, NYEARAAET> aaet_5;
 	/// annual sum of soil evaporation (mm/year)
 	double aevap;
+	double daet;
 	/// annual sum of interception (mm/year)
 	double aintercep;
 	/// annual sum of runoff (mm/year)

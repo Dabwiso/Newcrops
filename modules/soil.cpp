@@ -651,7 +651,7 @@ void Soil::hydrology_lpjf_twolayer(const Climate& climate, double fevap) {
 	patch.arunoff += runoff;
 	patch.aaet += aet_total;
 	patch.aevap += evap;
-
+	patch.daet = aet_total;
 	patch.maet[date.month] += aet_total;
 	patch.mevap[date.month] += evap;
 	patch.mrunoff[date.month] += runoff;
@@ -1184,6 +1184,10 @@ void Soil::hydrology_lpjf(const Climate& climate, double fevap) {
 	patch.arunoff += runoff;
 	patch.awetland_water_added += patch.wetland_water_added_today;
 	patch.aaet += aet_total;
+	patch.daet = aet_total;
+	if (date.year == 501 && date.day == 108) {
+		int goranovic = 1;
+	}
 	patch.aevap += evap;
 
 	patch.maet[date.month] += aet_total;
@@ -1487,6 +1491,7 @@ void Soil::hydrology_peat(const Climate& climate, double fevap) {
 
 		patch.aaet+=(1.0-fevap)*evapotranspiration;
 		patch.aevap+=fevap*evapotranspiration;
+		patch.daet = (1.0 - fevap) * evapotranspiration;
 		patch.maet[date.month]+=(1.0-fevap)*evapotranspiration;
 		patch.mevap[date.month]+=fevap*evapotranspiration;
 	} 
@@ -1495,6 +1500,7 @@ void Soil::hydrology_peat(const Climate& climate, double fevap) {
 		patch.aevap+=evap;
 		patch.mevap[date.month]+=evap;
 		patch.aaet += aet_total;
+		patch.daet = aet_total;
 		patch.maet[date.month] += aet_total;
 	}
 

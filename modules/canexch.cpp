@@ -6,7 +6,7 @@
 /// production, respiration and evapotranspiration.
 ///
 /// \author Ben Smith
-/// $Date: 2020-12-08 23:22:21 -0800 (Tue, 08 Dec 2020) $
+/// $Date: 2020-12-22 22:12:36 -0800 (Tue, 22 Dec 2020) $
 ///
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -30,6 +30,8 @@
 // When porting between frameworks, the only change required should normally be in the
 // "#include" directive referring to the framework header file.
 
+#pragma warning(disable : 26812)
+#pragma warning(disable : 6262)
 #include "config.h"
 #include "canexch.h"
 #include "driver.h"
@@ -2322,7 +2324,7 @@ void assimilation_wstress(const Pft& pft, double co2, double temp, double par,
     }
 
     // bvoc
-    lambda=xmid;
+    lambda= xmid;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -2739,7 +2741,7 @@ void init_canexch(Patch& patch, Climate& climate, Vegetation& vegetation) {
             vegetation.nextobj();
         }
     }
-
+     
     patch.wdemand_day = 0;
 }
 
@@ -2752,17 +2754,15 @@ void ozone_stress(Patch& patch, Vegetation& vegetation) {
         // the ratio of H2O diffusivity to O3 difussivity unitless (1.67)
         // Grûnhage et al. 2012
 
-        Individual& indiv = vegetation.getobj();
-        Patchpft& ppft = patch.pft[indiv.pft.id];
-
+        //Individual& indiv = vegetation.getobj();
+        //Patchpft& ppft = patch.pft[indiv.pft.id];
+        
         const double K_o3 = 1.67; //1.51 in OC-N (Massman 1998)
-
+        const double PATMOS = 1.0E5; // atmospheric pressure (Pa)
 
         Climate cl = patch.get_climate();
         double daylength = cl.daylength * 3600;
-
-        const double PATMOS = 1.0E5; // atmospheric pressure (Pa)
-
+        
         // mol per m3 under standard conditions using the ideal gas law
         double mol_per_m3 = PATMOS / ((cl.temp + 273.15) * 8.3145);
         double height_veg = max(1.0, patch.height);
@@ -2772,30 +2772,31 @@ void ozone_stress(Patch& patch, Vegetation& vegetation) {
         const double d = 0.65 * height_veg; // displacement from zero
 
         double wspeed = cl.u10 / 3.6;
-        const double fvelocity = (wspeed * 0.4) / log((10.0 + d) / Zm); // Karman constant is 0.4, if 10m is the height of measured windspeed
+        const double fvelocity = (wspeed * 0.4) / log((10.0 + d) / Zm); // Karman constant is 0.4, 10m is the height of measured windspeed m/s
         double wspeed45 = (fvelocity / 0.4) * log((45.0 - d) / Zm); // if 45m is the ozone input height
 
-        double Ra = wspeed45 / pow(fvelocity, 2.0);
-        double Rb = 6.0 / fvelocity;
-        double R_gs = 2000.0;
-        double gc_c = ppft.gcbase * 1e-3; // *indiv.fpc_today() with conversion to m from mm.
-        if (gc_c == 0.0) {
-            gc_c = indiv.gpterm * 1e-3; //indiv.fpc_today()  with conversion to m from mm.
-        }
+        double Ra = wspeed45 / pow(fvelocity, 2.0); // s/m
+        double Rb = 6.0 / fvelocity; // s/m
+        double R_gs = 2000.0; // s/m
+        double gc_c = patch.daet;
+        //double gc_c = ppft.gcbase * 1e-3; // *indiv.fpc_today() with conversion to m from mm. mm/s
+        //if (gc_c == 0.0) {
+        //    gc_c = indiv.gpterm * 1e-3; //indiv.fpc_today()  with conversion to m from mm. mm/s
+        //}
 
-        double gc_o3 = gc_c / K_o3;
+        double gc_o3 = gc_c / K_o3; //mm/s
 
-        double LAI = patch.lai;
-        double SAI = patch.sai;
-        double FT = exp(-0.2 * (1.0 + cl.temp));
-        double rext = 2500 * FT;
-        double rinc = 14.0 * SAI * (height_veg / fvelocity);
-        double rgs = 1.0 / (FT * R_gs);
+        double LAI = patch.lai; //unitless
+        double SAI = patch.sai; //unitless
+        double FT = exp(-0.2 * (1.0 + cl.temp)); //unitless
+        double rext = 2500 * FT; //m/s
+        double rinc = 14.0 * SAI * (height_veg / fvelocity); // unitless ??? unless there is an error in text
+        double rgs = 1.0 / (FT * R_gs); // m/s
 
-        double gc_ns = SAI / rext + 1.0 / (rinc + rgs);
+        double gc_ns = SAI / rext + 1.0 / (rinc + rgs); //m/s
 
-        double Rc = 1.0 / (gc_o3 + gc_ns);
-        double o3a = 0.0
+        double Rc = 1.0 / (gc_o3 + gc_ns); // s/m
+        double o3a = 100.0;  //nmol/m3
             //double o3a = patch.stand.get_gridcell().ozone_y;
             /*
     #undef TESTYEAR
@@ -2823,7 +2824,8 @@ void ozone_stress(Patch& patch, Vegetation& vegetation) {
         while (vegetation.isobj) {
 
 
-
+            Individual& indiv = vegetation.getobj();
+            Patchpft& ppft = patch.pft[indiv.pft.id];
             if (date.year == 602 && indiv.id == 181) {
              int kronic = 9;
             }
@@ -2848,10 +2850,10 @@ void ozone_stress(Patch& patch, Vegetation& vegetation) {
                 Fo3 += max(((gc_t * o3c * mol_per_m3) - 6.0e-9), 0.0) / cl.daylength;
             }
 #else
-            double Fo3 = ((gc_c / K_o3 * o3c * mol_per_m3) - ppft.pft.PODy * 1e-9);
+            double Fo3 = ((gc_c / K_o3 * o3c * mol_per_m3) - ppft.pft.PODy * 1e-9);//O3 flux over treshold mol/m2*s
 #endif
 
-            double dPODy = Fo3 * 1e3 * daylength * gc_o3_integrator;//convert to milli mole
+            double dPODy = Fo3 * 1e3 * daylength * gc_o3_integrator;//convert to milli mole/m2
             if (dPODy > 0.0) {
                 if (date.year == 501 && date.day == 107) {
                     int goranovic = 1;
@@ -2865,7 +2867,7 @@ void ozone_stress(Patch& patch, Vegetation& vegetation) {
                         if (indiv.istruecrop_or_intercropgrass()) {
                             cropindiv_struct& ci = *(indiv.get_cropindiv());
                             cropphen_struct& cp = *(ppft.get_cropphen());
-                            if (cp.dev_stage < 0.5) {
+                            if (cp.dev_stage < 0.95) {
                                 indiv.PODy = 0.0; // basically insensitive to O3 in the beginning of the growing season
                             }
                             else {
@@ -2876,7 +2878,7 @@ void ozone_stress(Patch& patch, Vegetation& vegetation) {
                             }
                         }
                         else {
-                            if (indiv.phen < 0.50) { //This is just a placeholder for more detailed description on the seasonality of the ozone sensitivities of different pfts.
+                            if (indiv.phen < 0.95) { //This is just a placeholder for more detailed description on the seasonality of the ozone sensitivities of different pfts.
                                 indiv.PODy = 0.0;
                             }
                             else {
@@ -2902,7 +2904,6 @@ void ozone_stress(Patch& patch, Vegetation& vegetation) {
             vegetation.nextobj();
         }
     }
-
 }
 
 double bnf_func_developmentstage (double ds, Pft& pft) {
@@ -3092,6 +3093,8 @@ void canopy_exchange(Patch& patch, Climate& climate) {
         npp(patch, climate, vegetation, day);
     }
     leaf_senescence(vegetation);
+
+    ozone_stress(patch, vegetation);
 
     // Forest-floor conditions
     forest_floor_conditions(patch);

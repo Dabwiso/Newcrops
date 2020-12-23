@@ -3,7 +3,7 @@
 /// \brief LPJ-GUESS Combined Modular Framework
 ///
 /// \author Ben Smith
-/// $Date: 2020-12-08 23:22:21 -0800 (Tue, 08 Dec 2020) $
+/// $Date: 2020-12-22 22:12:36 -0800 (Tue, 22 Dec 2020) $
 ///
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -399,7 +399,7 @@ Patch::Patch(int i,Stand& s,Soiltype& st):
 	height = 0.0;
 	lai = 0.0;
 	sai = 0.0;
-	
+	daet = 0.0;
 	for (int i = 0; i < NYEARAAET; i++) {
 		aaet_5.add(0.0);
 	}
