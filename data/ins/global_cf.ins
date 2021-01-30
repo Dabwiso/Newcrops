@@ -1,0 +1,65 @@
+!
+! Instruction file with global PFTs to be used with the
+! CF I/O module.
+!
+! Make sure to start LPJ-GUESS with -input cf when using this
+! instruction file.
+!
+
+import "global.ins"
+import "crop_m.ins"
+!///////////////////////////////////////////////////////////////////////////////////////
+! Forcing Data & gridlists
+!
+
+param "file_gridlist_cf" (str "gridlist_cf.txt")
+
+param "file_gridlist" (str "gridlist.txt")
+
+param "file_co2"      (str "/rds/projects/p/pughtam-cropozone/general_inputs/Model_run/co2_1901_2018.txt")
+
+! N deposition (blank string to use constant pre-industrial level of 2 kgN/ha/year)
+param "file_ndep"     (str "/rds/projects/p/pughtam-cropozone/general_inputs/Model_run/ndep/GlobalNitrogenDeposition.bin")
+
+param "file_temp"     (str "/rds/projects/p/pughtam-cropozone/general_inputs/AgMERRA/tas_agmerra_1980-2010_reorder.nc4")
+param "variable_temp" (str "tas")
+
+param "file_prec"     (str "/rds/projects/p/pughtam-cropozone/general_inputs/AgMERRA/pr_agmerra_1980-2010_reorder.nc4")
+param "variable_prec" (str "pr")
+
+param "file_insol"      (str "/rds/projects/p/pughtam-cropozone/general_inputs/AgMERRA/rsds_agmerra_1980-2010_reorder.nc4")
+param "variable_insol"  (str "rsds")
+
+param "file_wind" (str "")
+param "variable_wind"  (str "")
+
+param "file_relhum" (str "")
+param "variable_relhum"	(str "")
+
+! Needed if relative humidity is not supplied
+param "file_pres"     (str "")
+param "variable_pres" (str "")
+
+! Needed if relative humidity is not supplied
+param "file_specifichum" (str "")
+param "variable_specifichum" (str "")
+
+! Wet days can only be used with monthly precipitation
+param "file_wetdays"     (str "")
+param "variable_wetdays" (str "")
+
+! Min/max temp is required for BVOC,
+! if BVOC is switched off these can be set to ""
+param "file_min_temp"      (str "")
+param "variable_min_temp"  (str "")
+
+param "file_max_temp"      (str "")
+param "variable_max_temp"  (str "")
+
+! SIMFIRE-BLAZE related files  
+param "file_simfire"  (str "")
+
+! Soil map
+!param "file_soildata" (str "c:/soil/WISE/soilmap_center_interpolated.dat")
+param "file_soildata" (str "/rds/projects/p/pughtam-cropozone/general_inputs/Model_run/soilmap_center_interpolated.dat")
+

@@ -3,7 +3,8 @@ benchmarks/**
 build/**
 out/**
 .vs/**
-data/**
+data/gridlist/**
+data/env/**
 libraries/*/.svn/**
 tests/**
 reference/**
