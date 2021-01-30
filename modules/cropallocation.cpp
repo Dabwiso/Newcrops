@@ -509,7 +509,7 @@ void growth_crop_daily(Patch& patch) {
 			cropindiv.harv_cmass_ho = 0.0;
 			cropindiv.harv_cmass_agpool = 0.0;
 			cropindiv.harv_cmass_stem = 0.0;
-
+			cropindiv.harv_cmass_dleaves = 0.0;
 			cropindiv.cmass_ho_harvest[0] = 0.0;
 			cropindiv.cmass_ho_harvest[1] = 0.0;
 
@@ -589,6 +589,7 @@ void growth_crop_daily(Patch& patch) {
 				cropindiv.harv_cmass_leaf += cropindiv.grs_cmass_leaf;
 				cropindiv.harv_cmass_agpool += cropindiv.grs_cmass_agpool;
 				cropindiv.harv_cmass_stem += cropindiv.grs_cmass_stem;
+				cropindiv.harv_cmass_dleaves += cropindiv.grs_cmass_dead_leaf;
 
 				cropindiv.harv_nmass_root += indiv.nmass_root;
 				cropindiv.harv_nmass_ho += cropindiv.nmass_ho;
@@ -688,6 +689,7 @@ void growth_crop_daily(Patch& patch) {
 				cropindiv.harv_cmass_leaf += cropindiv.grs_cmass_leaf;
 				cropindiv.harv_cmass_ho += cropindiv.grs_cmass_ho;
 				cropindiv.harv_cmass_agpool += cropindiv.grs_cmass_agpool;
+				cropindiv.harv_cmass_dleaves += cropindiv.grs_cmass_dead_leaf;
 
 				cropindiv.harv_nmass_root += indiv.nmass_root;
 				cropindiv.harv_nmass_ho += cropindiv.nmass_ho;
@@ -728,6 +730,7 @@ void growth_crop_daily(Patch& patch) {
 				cropindiv.harv_cmass_leaf += cropindiv.grs_cmass_leaf;
 				cropindiv.harv_cmass_ho += cropindiv.grs_cmass_ho;
 				cropindiv.harv_cmass_agpool += cropindiv.grs_cmass_agpool;
+				cropindiv.harv_cmass_dleaves += cropindiv.grs_cmass_dead_leaf;
 
 				cropindiv.harv_nmass_root += indiv.nmass_root;
 				cropindiv.harv_nmass_ho += cropindiv.nmass_ho;

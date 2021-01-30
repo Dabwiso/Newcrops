@@ -2355,6 +2355,8 @@ struct cropindiv_struct : public Serializable {
 	double harv_cmass_agpool;
 	/// year's stem C biomass at time of harvest (cumulative if several harvest events)
 	double harv_cmass_stem;
+	/// year's dead leaves C biomass at time of harvest (cumulative if several harvest events)
+	double harv_cmass_dleaves;
 
 	///NITROGEN
 	/// nitrogen content of harvestable organs
@@ -2458,6 +2460,7 @@ struct cropindiv_struct : public Serializable {
 		harv_yield=0.0;
 		harv_cmass_agpool=0.0;
 		harv_cmass_stem = 0.0;
+		harv_cmass_dleaves = 0.0;
 		cmass_ho_harvest[0]=0.0;
 		cmass_ho_harvest[1]=0.0;
 

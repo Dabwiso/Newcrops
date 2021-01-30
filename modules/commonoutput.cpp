@@ -49,6 +49,7 @@ CommonOutput::CommonOutput() {
 	declare_parameter("file_npool", &file_npool, 300, "Soil nitrogen output file");
 	declare_parameter("file_nlitter", &file_nlitter, 300, "Litter nitrogen output file");
 	declare_parameter("file_nuptake", &file_nuptake, 300, "Annual nitrogen uptake output file");
+	declare_parameter("file_nleaching", &file_nleaching, 300, "Annual nitrogen leaching output file");
 	declare_parameter("file_vmaxnlim", &file_vmaxnlim, 300, "Annual nitrogen limitation on vm output file");
 	declare_parameter("file_nflux", &file_nflux, 300, "Annual nitrogen fluxes output file");
 	declare_parameter("file_ngases", &file_ngases, 300, "Annual nitrogen gases output file");
@@ -332,6 +333,10 @@ void CommonOutput::define_output_tables() {
 	// NUPTAKE
 	ColumnDescriptors nuptake_columns = nmass_columns;
 
+	//NLEACHING
+	ColumnDescriptors nleaching_columns; 
+	nleaching_columns += ColumnDescriptor("Nleach", 11, 4);
+
 	// NLITTER
 	ColumnDescriptors nlitter_columns = nmass_columns;
 
@@ -421,6 +426,7 @@ void CommonOutput::define_output_tables() {
 	create_output_table(out_npool,          file_npool,          npool_columns);
 	create_output_table(out_nlitter,        file_nlitter,        nlitter_columns);
 	create_output_table(out_nuptake,        file_nuptake,        nuptake_columns);
+	create_output_table(out_nleaching,      file_nleaching,      nleaching_columns);
 	create_output_table(out_vmaxnlim,       file_vmaxnlim,       vmaxnlim_columns);
 	create_output_table(out_nflux,          file_nflux,          nflux_columns);
 	create_output_table(out_ngases,         file_ngases,         ngases_columns);
@@ -848,6 +854,7 @@ void CommonOutput::outannual(Gridcell& gridcell) {
 	double standpft_amon_mt1=0.0;
 	double standpft_amon_mt2=0.0;
 	double standpft_nuptake=0.0;
+	double standpft_nleaching = 0.0;
 	double standpft_vmaxnlim=0.0;
 
 	// *** Loop through PFTs ***
@@ -926,6 +933,7 @@ void CommonOutput::outannual(Gridcell& gridcell) {
 			standpft_amon_mt1=0.0;
 			standpft_amon_mt2=0.0;
 			standpft_nuptake=0.0;
+			standpft_nleaching = 0.0;
 			standpft_vmaxnlim=0.0;
 
 			stand.firstobj();
@@ -1429,6 +1437,7 @@ void CommonOutput::outannual(Gridcell& gridcell) {
 	outlimit(out,out_cton_leaf, cton_leaf_gridcell);
 	outlimit(out,out_vmaxnlim,  vmaxnlim_gridcell);
 	outlimit(out,out_nuptake,   nuptake_gridcell * M2_PER_HA);
+	outlimit(out,out_nleaching, n_min_leach_gridcell* M2_PER_HA);
 	outlimit(out,out_nlitter,   nlitter_gridcell * M2_PER_HA);
 
 	outlimit(out,out_nsources, aNH4dep_gridcell * M2_PER_HA);

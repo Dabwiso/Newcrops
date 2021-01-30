@@ -53,7 +53,7 @@ private:
 	xtring file_aiso, file_miso, file_amon, file_mmon, file_amon_mt1, file_amon_mt2, file_mmon_mt1, file_mmon_mt2;
 
 	// nitrogen
-	xtring file_nmass, file_cton_leaf, file_nsources, file_npool, file_nlitter, file_nuptake, file_vmaxnlim, file_nflux, file_ngases;
+	xtring file_nmass, file_cton_leaf, file_nsources, file_npool, file_nlitter, file_nuptake, file_nleaching, file_vmaxnlim, file_nflux, file_ngases;
 	xtring file_soil_npool, file_soil_nflux;
 		
 	// BLAZE & SIMFIRE
@@ -79,7 +79,7 @@ private:
 	// bvoc
 	Table out_aiso, out_miso, out_amon, out_mmon, out_amon_mt1, out_amon_mt2, out_mmon_mt1, out_mmon_mt2;
 	
-	Table out_nmass, out_cton_leaf, out_nsources, out_npool, out_nlitter, out_nuptake, out_vmaxnlim, out_nflux, out_ngases;
+	Table out_nmass, out_cton_leaf, out_nsources, out_npool, out_nlitter, out_nuptake, out_nleaching, out_vmaxnlim, out_nflux, out_ngases;
 	Table out_soil_npool, out_soil_nflux;
 
 	// BLAZE && SIMFIRE

@@ -99,7 +99,7 @@ MiscOutput::MiscOutput() {
 	declare_parameter("file_daily_nminleach",&file_daily_nminleach,300,"Daily output.");
 	declare_parameter("file_daily_norgleach",&file_daily_norgleach,300,"Daily output.");
 	declare_parameter("file_daily_nuptake",&file_daily_nuptake,300,"Daily output.");
-
+	declare_parameter("file_daily_storage", &file_daily_storage, 300, "Daily storage allocation output file");
 	declare_parameter("file_daily_climate",&file_daily_climate,300,"Daily output.");
 
 	declare_parameter("file_daily_fphu",&file_daily_fphu,300,"Daily DS output file"); //daglig ds
@@ -530,7 +530,7 @@ void MiscOutput::outannual(Gridcell& gridcell) {
 							standpft_yield1 += indiv.cropindiv->yield_harvest[0];
 							standpft_yield2 += indiv.cropindiv->yield_harvest[1];
                                                  if (indiv.cropindiv->harv_cmass_ho > 0.0) {
-                                                 standpft_HI += (indiv.cropindiv->harv_cmass_ho / (indiv.cropindiv->harv_cmass_agpool + indiv.cropindiv->harv_cmass_stem + indiv.cropindiv->harv_cmass_leaf + indiv.cropindiv->harv_cmass_ho + indiv.cropindiv->grs_cmass_dead_leaf));
+                                                 standpft_HI += (indiv.cropindiv->harv_cmass_ho / (indiv.cropindiv->harv_cmass_agpool + indiv.cropindiv->harv_cmass_stem + indiv.cropindiv->harv_cmass_leaf + indiv.cropindiv->harv_cmass_ho + indiv.cropindiv->harv_cmass_dleaves));
                                                 }          
 						}
 						else {
@@ -1106,8 +1106,100 @@ void MiscOutput::outdaily(Gridcell& gridcell) {
 	double lat = gridcell.get_lat();
 	OutputRows out(output_channel, lon, lat, date.get_calendar_year(), date.day);
 
-	if (date.year < nyear_spinup) {
+	//if (date.year < nyear_spinup) {
+		//return;
+	//}
+
+	if (date.get_calendar_year() < 1998 || date.get_calendar_year() > 2000) {
 		return;
+	}
+
+	pftlist.firstobj();
+	while (pftlist.isobj) {
+		Pft& pft = pftlist.getobj();
+
+		if (pft.landcover != CROPLAND) {
+			pftlist.nextobj();
+			continue;
+		}
+
+		Gridcell::iterator gc_itr = gridcell.begin();
+		while (gc_itr != gridcell.end()) {
+
+			Stand& stand = *gc_itr;
+			if (stand.landcover != CROPLAND || stand.npatch() > 1) {
+				break;
+			}
+
+			stand.firstobj();
+			while (stand.isobj) {
+				Patch& patch = stand.getobj();
+				Vegetation& vegetation = patch.vegetation;
+				Patchpft& patchpft = patch.pft[pft.id];
+
+				double cwdn = patch.soil.sompool[SURFCWD].nmass + patch.soil.sompool[SURFFWD].nmass;
+				vegetation.firstobj();
+				while (vegetation.isobj) {
+					Individual& indiv = vegetation.getobj();
+					if (indiv.id != -1 && indiv.pft.id == pft.id && !indiv.cropindiv->isintercropgrass) {
+						//To be able to print values for the year after establishment of crops !
+						// (if not dead and has existed for at least one year)
+						// Ben 2007-11-28
+
+						plot("daily leaf N [g/m2]", pft.name, date.day, indiv.nmass_leaf * M2_PER_HA);
+						plot("daily leaf C [kg/m2]", pft.name, date.day, indiv.cmass_leaf_today() * M2_PER_HA);
+						outlimit_misc(out, out_daily_lai, indiv.lai_today());
+						outlimit_misc(out, out_daily_npp, indiv.dnpp * M2_PER_HA);
+						outlimit_misc(out, out_daily_cmass_leaf, indiv.cmass_leaf_today() * M2_PER_HA);
+						outlimit_misc(out, out_daily_cmass_root, indiv.cmass_root_today() * M2_PER_HA);
+						outlimit_misc(out, out_daily_avail_nmass_soil, M2_PER_HA * (patch.soil.nmass_avail(NO3) + cwdn));
+						outlimit_misc(out, out_daily_nuptake, indiv.ndemand * indiv.fnuptake*M2_PER_HA);
+						outlimit_misc(out, out_daily_nminleach, patch.soil.nmass_avail(NO3) * patch.soil.dperc / (patch.soil.dperc +
+							patch.soil.soiltype.gawc[0] * patch.soil.get_soil_water_upper()) * M2_PER_HA);
+						
+						double uw = patch.soil.dwcontupper[date.day];
+						if (uw < 1e-22) {
+							uw = 0.0;
+						}
+						double lw = patch.soil.dwcontlower[date.day];
+						if (lw < 1e-22) {
+							lw = 0.0;
+						}
+						outlimit_misc(out, out_daily_upper_wcont, uw);
+						outlimit_misc(out, out_daily_lower_wcont, lw);
+						outlimit_misc(out, out_daily_irrigation, patch.irrigation_d);
+
+
+						//outlimit_misc(out, out_daily_cmass_storage, indiv.cropindiv->dcmass_ho * M2_PER_HA);
+						outlimit_misc(out, out_daily_cmass_storage, indiv.cropindiv->grs_cmass_ho * M2_PER_HA);
+						outlimit_misc(out, out_daily_nmass_storage, indiv.cropindiv->nmass_ho * M2_PER_HA);
+
+						outlimit_misc(out, out_daily_ndemand, indiv.ndemand);
+						outlimit_misc(out, out_daily_cton, limited_cton(indiv.cmass_leaf_today(), indiv.nmass_leaf * M2_PER_HA));
+
+						if (ifnlim) {
+							outlimit_misc(out, out_daily_ds, patch.pft[pft.id].cropphen->dev_stage); // daglig ds
+							outlimit_misc(out, out_daily_cmass_stem, (indiv.cropindiv->grs_cmass_agpool + indiv.cropindiv->grs_cmass_stem) * M2_PER_HA);
+							outlimit_misc(out, out_daily_nmass_stem, indiv.cropindiv->nmass_agpool * M2_PER_HA);
+
+							outlimit_misc(out, out_daily_cmass_dead_leaf, indiv.cropindiv->grs_cmass_dead_leaf * M2_PER_HA);
+							outlimit_misc(out, out_daily_nmass_dead_leaf, indiv.cropindiv->nmass_dead_leaf * M2_PER_HA);
+
+							outlimit_misc(out, out_daily_fphu, patch.pft[pft.id].cropphen->fphu);
+							outlimit_misc(out, out_daily_stem, patch.pft[pft.id].cropphen->f_alloc_stem);
+							outlimit_misc(out, out_daily_leaf, patch.pft[pft.id].cropphen->f_alloc_leaf);
+							outlimit_misc(out, out_daily_root, patch.pft[pft.id].cropphen->f_alloc_root);
+							outlimit_misc(out, out_daily_storage, patch.pft[pft.id].cropphen->f_alloc_horg);
+						}
+
+					}
+					vegetation.nextobj();
+				}
+				stand.nextobj();
+			}
+			++gc_itr;
+		}
+		pftlist.nextobj();
 	}
 
 	outlimit_misc(out, out_daily_climate, gridcell.climate.temp);
