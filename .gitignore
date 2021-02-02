@@ -5,6 +5,7 @@ out/**
 .vs/**
 data/gridlist/**
 data/env/**
+data/ins/**
 libraries/*/.svn/**
 tests/**
 reference/**
