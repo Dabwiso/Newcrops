@@ -84,7 +84,7 @@ private:
 		   file_daily_nmass_dead_leaf, file_daily_fphu, file_daily_nminleach,
 		   file_daily_norgleach, file_daily_nuptake, file_daily_ds,
 		   file_daily_stem, file_daily_leaf, file_daily_root,
-		   file_daily_storage;
+		   file_daily_storage, file_daily_cmass_extra, file_daily_vmaxnlim;
 	xtring file_daily_climate;
 
 	// Output tables
@@ -119,7 +119,7 @@ private:
 		  out_daily_lower_wcont, out_daily_irrigation, out_daily_temp,
 		  out_daily_prec, out_daily_rad, out_daily_nminleach,
 		  out_daily_norgleach, out_daily_nuptake, out_daily_ds, out_daily_stem,
-		  out_daily_leaf, out_daily_root, out_daily_storage;
+		  out_daily_leaf, out_daily_root, out_daily_storage, out_daily_cmass_extra, out_daily_avail_vmaxnlim;
 	Table out_daily_climate;
 };
 

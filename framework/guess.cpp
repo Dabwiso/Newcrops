@@ -1141,7 +1141,8 @@ void cropindiv_struct::serialize(ArchiveStream& arch) {
 		& nmass_ho
 		& nmass_agpool
 		& nmass_dead_leaf
-		& isintercropgrass;
+		& isintercropgrass
+		& cmass_extra;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

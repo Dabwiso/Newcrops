@@ -85,10 +85,11 @@ MiscOutput::MiscOutput() {
 	declare_parameter("file_daily_cmass_stem",&file_daily_cmass_stem,300,"Daily output.");
 	declare_parameter("file_daily_nmass_stem",&file_daily_nmass_stem,300,"Daily output.");
 	declare_parameter("file_daily_cmass_storage",&file_daily_cmass_storage,300,"Daily output.");
+	declare_parameter("file_daily_cmass_extra", &file_daily_cmass_extra,300,"Daily output.");
 	declare_parameter("file_daily_nmass_storage",&file_daily_nmass_storage,300,"Daily output.");
-
 	declare_parameter("file_daily_cmass_dead_leaf",&file_daily_cmass_dead_leaf,300,"Daily output.");
 	declare_parameter("file_daily_nmass_dead_leaf",&file_daily_nmass_dead_leaf,300,"Daily output.");
+	declare_parameter("file_daily_vmaxnlim", &file_daily_vmaxnlim, 300, "Daily output.");
 
 	declare_parameter("file_daily_n_input_soil",&file_daily_n_input_soil,300,"Daily output.");
 	declare_parameter("file_daily_avail_nmass_soil",&file_daily_avail_nmass_soil,300,"Daily output.");
@@ -359,18 +360,20 @@ void MiscOutput::define_output_tables() {
 	create_output_table(out_daily_cmass_root,			file_daily_cmass_root,			daily_columns);
 	create_output_table(out_daily_nmass_stem,			file_daily_nmass_stem,			daily_columns);
 	create_output_table(out_daily_cmass_stem,			file_daily_cmass_stem,			daily_columns);
+	create_output_table(out_daily_cmass_extra,          file_daily_cmass_extra,          daily_columns);
 	create_output_table(out_daily_nmass_storage,        file_daily_nmass_storage,       daily_columns);
 	create_output_table(out_daily_cmass_storage,        file_daily_cmass_storage,       daily_columns);
 	create_output_table(out_daily_nmass_dead_leaf,      file_daily_nmass_dead_leaf,     daily_columns);
 	create_output_table(out_daily_cmass_dead_leaf,      file_daily_cmass_dead_leaf,     daily_columns);
 	create_output_table(out_daily_n_input_soil,         file_daily_n_input_soil,        daily_columns);
 	create_output_table(out_daily_avail_nmass_soil,     file_daily_avail_nmass_soil,    daily_columns);
+	create_output_table(out_daily_avail_vmaxnlim,       file_daily_vmaxnlim,            daily_columns);
 
 	create_output_table(out_daily_upper_wcont,			file_daily_upper_wcont,         daily_columns);
 	create_output_table(out_daily_lower_wcont,			file_daily_lower_wcont,         daily_columns);
 	create_output_table(out_daily_irrigation,			file_daily_irrigation,			daily_columns);
 
-	create_output_table(out_daily_climate,					file_daily_climate,					daily_climate_columns);
+	create_output_table(out_daily_climate,				file_daily_climate,				daily_climate_columns);
 
 	create_output_table(out_daily_cton,					file_daily_cton,				daily_columns);
 
@@ -1156,6 +1159,8 @@ void MiscOutput::outdaily(Gridcell& gridcell) {
 						outlimit_misc(out, out_daily_nuptake, indiv.ndemand * indiv.fnuptake*M2_PER_HA);
 						outlimit_misc(out, out_daily_nminleach, patch.soil.nmass_avail(NO3) * patch.soil.dperc / (patch.soil.dperc +
 							patch.soil.soiltype.gawc[0] * patch.soil.get_soil_water_upper()) * M2_PER_HA);
+						outlimit_misc(out, out_daily_cmass_extra, indiv.cropindiv->cmass_extra * M2_PER_HA);
+						outlimit_misc(out, out_daily_avail_vmaxnlim, indiv.photosynthesis.vmaxnlim);
 						
 						double uw = patch.soil.dwcontupper[date.day];
 						if (uw < 1e-22) {

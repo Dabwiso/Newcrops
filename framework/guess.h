@@ -2314,6 +2314,8 @@ struct cropindiv_struct : public Serializable {
 	double grs_cmass_dead_leaf;
 	/// daily updated stem pool C biomass, reset at harvest day
 	double grs_cmass_stem;
+	/// Seed carbon
+	double cmass_extra;
 
 	/// carbon content of harvestable organs saved on first day of land use change year
 	double grs_cmass_leaf_luc;
@@ -2443,6 +2445,7 @@ struct cropindiv_struct : public Serializable {
 		grs_cmass_agpool_luc=0.0;
 		grs_cmass_dead_leaf_luc = 0.0;
 		grs_cmass_stem_luc = 0.0;
+		cmass_extra = 0.0;
 		nmass_ho=0.0;
 		nmass_agpool=0.0;
 		nmass_dead_leaf = 0.0;

@@ -193,8 +193,8 @@ void allocation_crop_nlim(Individual& indiv, double cmass_seed, double nmass_see
 	indiv.report_flux(Fluxes::SEEDC, -cmass_seed);
 	indiv.report_flux(Fluxes::SEEDN, -nmass_seed);
 
-	// add seed carbon
-	double cmass_extra = cmass_seed;
+	
+	cropindiv.cmass_extra = cmass_seed;
 
 	// add seed nitrogen, with the assumption that the seedling is initiated with 50% in roots and 50% in the leaves. 
 	indiv.nmass_leaf += nmass_seed / 2.0;
@@ -223,7 +223,7 @@ void allocation_crop_nlim(Individual& indiv, double cmass_seed, double nmass_see
 	// Retranslocation from the fast C pool to the grains towards the end of the grainfilling period. 
 	// NB, only works for cereals (grasses), needs to be adjusted to work for herb and tuber crops.
 	if (cropindiv.grs_cmass_agpool > 0.0 && patchpft.cropphen->f_alloc_horg > 0.95) {
-		cmass_extra += 0.1 * cropindiv.grs_cmass_agpool;
+		cropindiv.cmass_extra += 0.1 * cropindiv.grs_cmass_agpool;
 		cropindiv.ycmass_agpool -= 0.1 * cropindiv.grs_cmass_agpool;
 		cropindiv.grs_cmass_agpool *= 0.9;
 	}
@@ -235,7 +235,7 @@ void allocation_crop_nlim(Individual& indiv, double cmass_seed, double nmass_see
 	if (indiv.daily_cmass_leafloss > 0.0) {
 
 		// Daily C mass leaf increment.
-		cropindiv.dcmass_leaf = (indiv.dnpp + cmass_extra) * patchpft.cropphen->f_alloc_leaf - indiv.daily_cmass_leafloss;
+		cropindiv.dcmass_leaf = (indiv.dnpp + cropindiv.cmass_extra) * patchpft.cropphen->f_alloc_leaf - indiv.daily_cmass_leafloss;
 		cropindiv.grs_cmass_dead_leaf += indiv.daily_cmass_leafloss;
 		cropindiv.ycmass_dead_leaf += indiv.daily_cmass_leafloss;
 		if (indiv.daily_cmass_leafloss / 100.0<indiv.nmass_leaf) {
@@ -284,14 +284,14 @@ void allocation_crop_nlim(Individual& indiv, double cmass_seed, double nmass_see
 		cropindiv.nmass_agpool += indiv.daily_nmass_leafloss;
 	}
 	else {
-		cropindiv.dcmass_leaf = (indiv.dnpp + cmass_extra) * patchpft.cropphen->f_alloc_leaf;
+		cropindiv.dcmass_leaf = (indiv.dnpp + cropindiv.cmass_extra) * patchpft.cropphen->f_alloc_leaf;
 	}
-	cropindiv.dcmass_stem = (indiv.dnpp + cmass_extra) * patchpft.cropphen->f_alloc_stem;
+	cropindiv.dcmass_stem = (indiv.dnpp + cropindiv.cmass_extra) * patchpft.cropphen->f_alloc_stem;
 
 	if (indiv.daily_cmass_rootloss > indiv.cmass_root_today())
 		indiv.daily_cmass_rootloss = 0.0;
 
-	cropindiv.dcmass_root = (indiv.dnpp + cmass_extra) * patchpft.cropphen->f_alloc_root - indiv.daily_cmass_rootloss;
+	cropindiv.dcmass_root = (indiv.dnpp + cropindiv.cmass_extra) * patchpft.cropphen->f_alloc_root - indiv.daily_cmass_rootloss;
 
 	// The lost root C is directly put into the litter.
 	patch.soil.sompool[SOILMETA].cmass += indiv.daily_cmass_rootloss;
@@ -307,7 +307,7 @@ void allocation_crop_nlim(Individual& indiv, double cmass_seed, double nmass_see
 		patch.is_litter_day = true;
 	}
 
-	cropindiv.dcmass_ho = (indiv.dnpp + cmass_extra) * patchpft.cropphen->f_alloc_horg;
+	cropindiv.dcmass_ho = (indiv.dnpp + cropindiv.cmass_extra) * patchpft.cropphen->f_alloc_horg;
 	cropindiv.dcmass_plant = cropindiv.dcmass_ho + cropindiv.dcmass_root + cropindiv.dcmass_stem + cropindiv.dcmass_leaf;
 
 	// Add the daily increments to the annual and growing season variables.
