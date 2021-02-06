@@ -57,7 +57,8 @@ iftillage 1			! Whether to simulate tillage by increasing soil respiration
 ifcalcdynamic_phu 1		! Whether to calculate dynamic potential heat units
 ifdyn_phu_limit 0		! Whether to limit dynamic phu calculation to a period specified by nyear_dyn_phu
 nyear_dyn_phu 50		! Number of years to calculate dynamic phu if dynamic_phu_limit is 1
-ifactuallyinundate 1            ! Whether to actually add all water to inundated crops  
+ifactuallyinundate 1            ! Whether to actually add all water to inundated crops
+if_no_spinup_senescence 1       ! Whether we should disable senescence after spinup (previous behavior) or after freenyears (new behavior; default)  
 !///////////////////////////////////////////////////////////////////////////////////////
 !// PARAMETERS FOR STAND TYPES
 

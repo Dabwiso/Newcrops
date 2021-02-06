@@ -21,7 +21,7 @@
 /// functions.
 ///
 /// \author Joe Siltberg
-/// $Date: 2020-12-08 23:22:21 -0800 (Tue, 08 Dec 2020) $
+/// $Date: 2021-02-04 14:18:16 -0500 (Thu, 04 Feb 2021) $
 ///
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -167,6 +167,9 @@ extern double nfix_a;
 
 /// second term in nitrogen fixation eqn (Cleveland et al 1999)
 extern double nfix_b;
+
+/// Whether we should disable senescence after spinup (previous behavior) or after freenyears (new behavior; default)
+extern bool if_no_spinup_senescence;
 
 /// whether to use nitrification/denitrification in CENTURY SOM dynamics
 extern bool ifntransform;

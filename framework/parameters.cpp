@@ -7,7 +7,7 @@
 /// function plib_callback).
 ///
 /// \author Joe Siltberg
-/// $Date: 2020-12-08 23:22:21 -0800 (Tue, 08 Dec 2020) $
+/// $Date: 2021-02-04 14:18:16 -0500 (Thu, 04 Feb 2021) $
 ///
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -48,6 +48,7 @@ double nrelocfrac;
 double nfix_a;
 double nfix_b;
 
+bool if_no_spinup_senescence;
 bool ifntransform;
 double frac_labile_carbon = 1.0;
 double pH_soil;
@@ -556,7 +557,9 @@ void plib_declarations(int id,xtring setname) {
 		declareitem("textured_soil",&textured_soil,1,CB_NONE,"Use silt/sand fractions specific to soiltype");
 		declareitem("disturb_pasture",&disturb_pasture,1,CB_NONE,"Whether fire and disturbances enabled on pastures (0,1)");
 		declareitem("grassforcrop",&grassforcrop,1,CB_NONE,"grassforcrop");
-            
+        
+		// SSR
+	    declareitem("if_no_spinup_senescence", &if_no_spinup_senescence, 1, CB_NONE,"Whether we should disable senescence after spinup (previous behavior) or after freenyears (new behavior; default)");
         // SSR irrigation/inundation work
         declareitem("ifactuallyinundate",&ifactuallyinundate,1,CB_NONE,"Whether to actually add all water to inundated crops (true, new behavior) or just add enough for plant demand and then add the rest in diagnostic outputs only (false, old behavior).");
 			// declareitem("k_N",    &k_N,    0.0001, 1.0, 1,CB_NONE, "Constant in denitrification");
@@ -1310,6 +1313,8 @@ void plib_callback(int callback) {
 			sendmessage("Error", "freenyears must be smaller than nyear_spinup");
 			plibabort();
 		}
+
+		if (!itemparsed("if_no_spinup_senescence")) if_no_spinup_senescence = false;
 
 		if (!itemparsed("ifntransform")) badins("ifntransform");
 		if (ifntransform && !ifnlim) {

@@ -6,7 +6,7 @@
 /// production, respiration and evapotranspiration.
 ///
 /// \author Ben Smith
-/// $Date: 2020-12-06 21:13:55 -0800 (Sun, 06 Dec 2020) $
+/// $Date: 2021-02-04 14:18:16 -0500 (Thu, 04 Feb 2021) $
 ///
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -2599,6 +2599,16 @@ void leaf_senescence(Vegetation& vegetation) {
 
     if (!(vegetation.patch.stand.is_true_crop_stand() && ifnlim)) {
         return;
+        
+    }
+   
+        int first_senescence_year;
+    if (if_no_spinup_senescence) {
+        first_senescence_year = nyear_spinup;
+        
+    }
+    else {
+        first_senescence_year = freenyears;
     }
 
     vegetation.firstobj();
