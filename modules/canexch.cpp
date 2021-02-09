@@ -6,7 +6,7 @@
 /// production, respiration and evapotranspiration.
 ///
 /// \author Ben Smith
-/// $Date: 2021-02-04 14:18:16 -0500 (Thu, 04 Feb 2021) $
+/// $Date: 2021-02-09 01:00:41 -0500 (Tue, 09 Feb 2021) $
 ///
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -1702,23 +1702,19 @@ double irrigated_water_uptake(Patch& patch, Pft& pft, const Day& day, bool inund
 
     // SSR
     bool just_inund_upper = false;
-    const int nsoillayer_tmp = NSOILLAYER; //Jing change to const int
-	int* a; //Jing created a pointer to the const 
-	a = (int*)&nsoillayer_tmp; //Jing
-
-	if (inundated && !just_inund_upper) {
-        *a = NSOILLAYER; //Jing
+    int nsoillayer_tmp;
+    if (inundated && !just_inund_upper) {
+        nsoillayer_tmp = NSOILLAYER;
     } else {
-        *a = NSOILLAYER_UPPER; //Jing
+        nsoillayer_tmp = NSOILLAYER_UPPER;
     }
-
     bool consider_ice = true;
 //    bool consider_ice = inundated && ifactuallyinundate;
     double inund_wcont = 1.0;
 //    double inund_wcont = 0.99;
     
-    double wcont_opt[nsoillayer_tmp];
-    bool add_water[nsoillayer_tmp];
+    double* wcont_opt =new double [nsoillayer_tmp];
+    bool* add_water = new bool[nsoillayer_tmp];
     for (int i = 0; i<nsoillayer_tmp; i++) add_water[i] = true;
 
     if (ppft.phen > 0.0 && patch.soil.get_soil_water_upper()<restrict_irr_wcont)    {
@@ -1808,9 +1804,9 @@ double irrigated_water_uptake(Patch& patch, Pft& pft, const Day& day, bool inund
 
             double water_to_add = 0.0;
             
-            double water_to_add_ly[nsoillayer_tmp];
+            double* water_to_add_ly= new double[nsoillayer_tmp];
             for (int i = 0; i < nsoillayer_tmp; i++) water_to_add_ly[i] = 0.0;
-            double too_much_ice_ly[nsoillayer_tmp];
+            double* too_much_ice_ly= new double[nsoillayer_tmp];
             for (int i = 0; i < nsoillayer_tmp; i++) too_much_ice_ly[i] = 0.0;
             
             if (iftwolayersoil) {
@@ -1858,11 +1854,11 @@ double irrigated_water_uptake(Patch& patch, Pft& pft, const Day& day, bool inund
             // Local storage
 
             // available (liquid) water in each soil layer (mm)
-            double Fw_liq_layer[nsoillayer_tmp];
+            double* Fw_liq_layer= new double[nsoillayer_tmp];
             // ice in each soil layer (mm)
-            double Fw_ice_layer[nsoillayer_tmp];
+            double* Fw_ice_layer= new double[nsoillayer_tmp];
             // water that can still be added to each soil layer (mm)
-            double potential_layer[nsoillayer_tmp];
+            double* potential_layer= new double[nsoillayer_tmp];
 
             // initialise to 0 mm
             for (int sl = 0; sl<nsoillayer_tmp; sl++) {
